@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "188E089A1AB11F2800414C8C"
-               BuildableName = "earth.app"
+               BuildableName = "&#x7a79;&#x9876;&#x4e4b;&#x4e0b;.app"
                BlueprintName = "earth"
                ReferencedContainer = "container:earth.xcodeproj">
             </BuildableReference>
@@ -57,7 +57,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "188E089A1AB11F2800414C8C"
-            BuildableName = "earth.app"
+            BuildableName = "&#x7a79;&#x9876;&#x4e4b;&#x4e0b;.app"
             BlueprintName = "earth"
             ReferencedContainer = "container:earth.xcodeproj">
          </BuildableReference>
@@ -76,7 +76,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "188E089A1AB11F2800414C8C"
-            BuildableName = "earth.app"
+            BuildableName = "&#x7a79;&#x9876;&#x4e4b;&#x4e0b;.app"
             BlueprintName = "earth"
             ReferencedContainer = "container:earth.xcodeproj">
          </BuildableReference>
@@ -94,7 +94,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "188E089A1AB11F2800414C8C"
-            BuildableName = "earth.app"
+            BuildableName = "&#x7a79;&#x9876;&#x4e4b;&#x4e0b;.app"
             BlueprintName = "earth"
             ReferencedContainer = "container:earth.xcodeproj">
          </BuildableReference>

@@ -1,0 +1,34 @@
+//
+//  PrefixHeader.pch
+//  earth
+//
+//  Created by Feicun on 15/3/30.
+//  Copyright (c) 2015年 ShuXiaJian.Studio. All rights reserved.
+//
+
+#ifndef earth_PrefixHeader_pch
+#define earth_PrefixHeader_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#import "WeiboSDK.h"
+#import <AVOSCloud/AVOSCloud.h>
+
+#define kAppKey @"1859263733"
+#define kAppSecret @"cbb024d3a14f47497265e894ff2b8aac"
+#define kRedirectURI @"http://api.weibo.com/oauth2/default.html"
+
+#define AVOS_APP_ID @"4t1kzeyrgy35394d4zr702zxoexkqvpnlgokyjd3g9s4t7dj"
+#define AVOS_APP_KEY @"1ddpodhdznki2w6f8fz78dioh604gdvgrdyhob4f9kh9ki02"
+
+#define GOOGLE_AD_ID @"ca-app-pub-9981528462779788/2026810556"
+
+#define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
+#define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
+#define BTN_SIZE SCREEN_WIDTH / 5
+#define MAIN_PADDING (SCREEN_WIDTH - 4 * BTN_SIZE) / 5
+#define WB_PADDING (SCREEN_WIDTH - 2 * BTN_SIZE) / 3
+#define SKY_BLUE [UIColor colorWithRed:0 green:190.0 / 255.0 blue:1.0f alpha:1.0f]
+
+#endif
