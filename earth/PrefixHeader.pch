@@ -14,6 +14,7 @@
 
 #import "WeiboSDK.h"
 #import <AVOSCloud/AVOSCloud.h>
+#import "ResourceManager.h"
 
 #define kAppKey @"1859263733"
 #define kAppSecret @"cbb024d3a14f47497265e894ff2b8aac"
@@ -22,13 +23,18 @@
 #define AVOS_APP_ID @"4t1kzeyrgy35394d4zr702zxoexkqvpnlgokyjd3g9s4t7dj"
 #define AVOS_APP_KEY @"1ddpodhdznki2w6f8fz78dioh604gdvgrdyhob4f9kh9ki02"
 
-#define GOOGLE_AD_ID @"ca-app-pub-9981528462779788/2026810556"
+#warning ID需要替换
+#define GOOGLE_AD_ID @"ca-app-pub-9981528462779788/6387264958"
+//@"ca-app-pub-9981528462779788/2026810556"
 
 #define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
 #define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
 #define BTN_SIZE SCREEN_WIDTH / 5
 #define MAIN_PADDING (SCREEN_WIDTH - 4 * BTN_SIZE) / 5
-#define WB_PADDING (SCREEN_WIDTH - 2 * BTN_SIZE) / 3
+#define WB_PADDING (SCREEN_WIDTH - 3 * BTN_SIZE) / 4
 #define SKY_BLUE [UIColor colorWithRed:0 green:190.0 / 255.0 blue:1.0f alpha:1.0f]
 
+#define MORE_INFO @"1.拨打12369会根据您的位置添加区号。\n2.发布微博目前仅支持客户端授权方式，需要您的设备上安装微博客户端。\n3.发布微博会@本省环境保护厅以及本市环境保护局的官方微博。"
+
+#define ALLWB_HEIGHT 50
 #endif

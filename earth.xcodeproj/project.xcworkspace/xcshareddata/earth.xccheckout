@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>D16C60C3-63EF-4A2B-B559-A9192F32E4A9</string>
+	<key>IDESourceControlProjectName</key>
+	<string>earth</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>70D380F88D84B782BBA23AF4BEFF82253F0BBDCD</key>
+		<string>https://github.com/ChenFeicun/Earth.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>earth.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>70D380F88D84B782BBA23AF4BEFF82253F0BBDCD</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/ChenFeicun/Earth.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>70D380F88D84B782BBA23AF4BEFF82253F0BBDCD</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>70D380F88D84B782BBA23AF4BEFF82253F0BBDCD</string>
+			<key>IDESourceControlWCCName</key>
+			<string>earth</string>
+		</dict>
+	</array>
+</dict>
+</plist>

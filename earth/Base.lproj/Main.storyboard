@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="S2P-uX-oez">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14C1514" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="S2P-uX-oez">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
     </dependencies>
     <scenes>
         <!--Launch View Controller-->
@@ -50,6 +50,28 @@
             </objects>
             <point key="canvasLocation" x="971.5" y="240.5"/>
         </scene>
+        <!--AllWB View Controller-->
+        <scene sceneID="qRo-VM-BiW">
+            <objects>
+                <viewController id="mJy-dz-HiJ" customClass="AllWBViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="0yb-cH-KIl"/>
+                        <viewControllerLayoutGuide type="bottom" id="Owz-Hf-jQl"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="SFK-Eo-tNY">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <connections>
+                        <segue destination="PeZ-zA-UtB" kind="showDetail" identifier="BackToWB" id="RkW-ej-Nb9"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mkD-bl-dbm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2295.5" y="240.5"/>
+        </scene>
         <!--View Controller-->
         <scene sceneID="blD-7U-QYa">
             <objects>
@@ -68,6 +90,7 @@
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>
                         <segue destination="dHh-o2-khR" kind="showDetail" identifier="BackToMain" id="irW-cD-BaH"/>
+                        <segue destination="mJy-dz-HiJ" kind="show" identifier="ShowAllWB" id="PuH-Wk-DL2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0AY-gw-rjn" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -94,6 +117,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="w1O-q7-1e2"/>
+        <segue reference="RkW-ej-Nb9"/>
+        <segue reference="irW-cD-BaH"/>
     </inferredMetricsTieBreakers>
 </document>

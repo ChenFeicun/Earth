@@ -7,7 +7,6 @@
 //
 
 #import "WBViewController.h"
-#import "AppDelegate.h"
 #import "ImgButton.h"
 #import "SCLAlertView.h"
 #import <MobileCoreServices/UTCoreTypes.h>
@@ -22,10 +21,12 @@
 //@property (strong, nonatomic) ImgButton *cameraBtn;
 @property (nonatomic) BOOL isSelectPic;
 @property (strong, nonatomic) ImgButton *addBtn;
+@property (strong, nonatomic) ImgButton *listBtn;
 @property (strong, nonatomic) UILabel *addLabel;
 @property (strong, nonatomic) UIImageView *contentImageView;
 @property (strong, nonatomic) UIImage *chosenImage;
 @property (strong, nonatomic) NSData *chosenImageData;
+@property (nonatomic) BOOL isCamera;
 
 @property (strong, nonatomic) NSString *provinceWB;
 @property (strong, nonatomic) NSString *cityWB;
@@ -95,11 +96,15 @@
     [alert showTitle:self title:@"选择图片来源" subTitle:@"" style:Success closeButtonTitle:@"取消" duration:0.0f];
 }
 
+- (void)checkAllWB:(UIButton *)sender {
+    [self performSegueWithIdentifier:@"ShowAllWB" sender:self];
+}
+
 - (void)sendWBMsgSuccess:(NSNotification *)notification {
     SCLAlertView *alert = [[SCLAlertView alloc] init];
     [alert showTitle:self title:@"发布微博成功" subTitle:@"" style:Success closeButtonTitle:@"确定" duration:0.0f];
     NSString *type = [notification.userInfo objectForKey:@"type"];
-    if ([type isEqualToString:@"singPic"]) {
+    if ([type isEqualToString:@"singlePic"]) {
         //微博发送成功  上传至AVOS
         dispatch_async(dispatch_get_main_queue(), ^{
             NSString *username = [AVUser currentUser].username;//[[NSUserDefaults standardUserDefaults] objectForKey:@"WBUsername"];
@@ -139,10 +144,12 @@
 - (void)getPicFromPhotoLibrary:(UIButton *)sender {
     //UIImagePickerControllerSourceTypeSavedPhotosAlbum 从相册中取
     //UIImagePickerControllerSourceTypePhotoLibrary 图库(包括自己下载保存的)
+    self.isCamera = NO;
     [self getMediaFromSource:UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
 - (void)getPicFromCamera:(UIButton *)sender {
+    self.isCamera = YES;
     [self getMediaFromSource:UIImagePickerControllerSourceTypeCamera];
 }
 
@@ -168,11 +175,20 @@
     }
 }
 
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
+    //不知道会出什么错误 暂时可以不管 已经得到拍的照片了
+}
+
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     NSString *lastChosenMediaType = [info objectForKey:UIImagePickerControllerMediaType];
     if ([lastChosenMediaType isEqual:(NSString *) kUTTypeImage]) {
         self.chosenImage = [info objectForKey:UIImagePickerControllerOriginalImage];
         self.isSelectPic = YES;
+        //相机拍的需要保存
+        if (self.isCamera) {
+            UIImageWriteToSavedPhotosAlbum(self.chosenImage, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+        }
+        
         float width = self.chosenImage.size.width;
         float height = self.chosenImage.size.height;
         height = height / (width / (SCREEN_WIDTH - 2 * MAIN_PADDING));
@@ -196,9 +212,9 @@
     [picker dismissViewControllerAnimated:YES completion:^{
         if (self.isSelectPic) {
             self.addLabel.hidden = YES;
-            //[self.addBtn hiddenBorder];
             self.addBtn.frame = CGRectMake(WB_PADDING + 10, SCREEN_HEIGHT - BTN_SIZE - MAIN_PADDING + 10, BTN_SIZE - 20, BTN_SIZE - 20);
             self.weibiBtn.frame = CGRectMake(2 * WB_PADDING + BTN_SIZE + 10, SCREEN_HEIGHT - BTN_SIZE - MAIN_PADDING + 10, BTN_SIZE - 20, BTN_SIZE - 20);
+            self.listBtn.frame = CGRectMake(3 * WB_PADDING + BTN_SIZE * 2 + 10, SCREEN_HEIGHT - BTN_SIZE - MAIN_PADDING + 10, BTN_SIZE - 20, BTN_SIZE - 20);
         }
     }];
 }
@@ -255,6 +271,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = SKY_BLUE;
     self.isSelectPic = NO;
+    self.isCamera = NO;
     [self googleAD];
     [self buttonInit];
     [self avosLogin];
@@ -263,23 +280,19 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sendWBMsgSuccess:) name:@"SendWBMsgSuccess" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sendWBMsgFail:) name:@"SendWBMsgFail" object:nil];
     
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"CityWB" ofType:@"plist"];
-    NSDictionary *plistDict = [NSDictionary dictionaryWithContentsOfFile:path];
-    
     NSString *province = [[NSUserDefaults standardUserDefaults] objectForKey:@"Province"];
     NSString *city = [[NSUserDefaults standardUserDefaults] objectForKey:@"City"];
     
     
-    NSDictionary *cityDict = [plistDict objectForKey:province];
-    self.provinceWB = [cityDict objectForKey:@"省"];
-    self.cityWB = [cityDict objectForKey:city];
+    self.provinceWB = [[ResourceManager sharedInstance] getProvinceWB:province];
+    self.cityWB = [[ResourceManager sharedInstance] getCityWB:city ofProvince:province];
     //未定位
     if (!province) {
         SCLAlertView *alert = [[SCLAlertView alloc] init];
-        [alert showWarning:self title:@"未定位当前位置" subTitle:@"无法根据您的位置自动@当地的环保机构官方微博。" closeButtonTitle:@"确定" duration:0.0f];
+        [alert showWarning:self title:@"未定位当前位置" subTitle:@"无法根据您的位置自动@当地的环保机构官方微博,将为您@微言环保。" closeButtonTitle:@"确定" duration:0.0f];
     } else if (![self isExistWB]) {
         SCLAlertView *alert = [[SCLAlertView alloc] init];
-        [alert showWarning:self title:@"未开通微博" subTitle:@"您所在区域的环保机构尚未开通官方微博。" closeButtonTitle:@"确定" duration:0.0f];
+        [alert showWarning:self title:@"未开通微博" subTitle:@"您所在区域的环保机构尚未开通官方微博,将为您@微言环保。" closeButtonTitle:@"确定" duration:0.0f];
     }
 }
 
@@ -321,14 +334,17 @@
 }
 
 - (void)buttonInit {
-    self.weibiBtn = [[ImgButton alloc] initWithFrame:CGRectMake(SCREEN_WIDTH / 2 - BTN_SIZE / 2, SCREEN_HEIGHT - BTN_SIZE - MAIN_PADDING, BTN_SIZE, BTN_SIZE) withImgName:@"send"];
+    self.weibiBtn = [[ImgButton alloc] initWithFrame:CGRectMake((SCREEN_WIDTH - BTN_SIZE * 2) / 3, SCREEN_HEIGHT - BTN_SIZE - MAIN_PADDING, BTN_SIZE, BTN_SIZE) withImgName:@"send"];
     [self.weibiBtn addTarget:self action:@selector(sendWeiboPic:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.weibiBtn];
     
     self.addBtn = [[ImgButton alloc] initWithFrame:CGRectMake(SCREEN_WIDTH / 2 - BTN_SIZE / 2, (SCREEN_HEIGHT - self.weibiBtn.frame.origin.x) / 2 - BTN_SIZE / 2, BTN_SIZE, BTN_SIZE) withImgName:@"picture"];
     [self.addBtn addTarget:self action:@selector(addPicture:) forControlEvents:UIControlEventTouchUpInside];
-    //[self.addBtn showBorder];
     [self.view addSubview:self.addBtn];
+    
+    self.listBtn = [[ImgButton alloc] initWithFrame:CGRectMake((SCREEN_WIDTH - BTN_SIZE * 2) * 2 / 3 + BTN_SIZE, SCREEN_HEIGHT - BTN_SIZE - MAIN_PADDING, BTN_SIZE, BTN_SIZE) withImgName:@"list"];
+    [self.listBtn addTarget:self action:@selector(checkAllWB:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.listBtn];
 
     self.addLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, self.addBtn.frame.origin.y + BTN_SIZE + 10, SCREEN_WIDTH, 100)];
     self.addLabel.text = @"点击选取图片\n(目前仅支持添加单张图片,\n多张图片请在点击发送按钮后,\n跳转至微博页面添加)";

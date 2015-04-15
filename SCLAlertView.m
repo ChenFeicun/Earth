@@ -72,7 +72,7 @@ NSTimer *durationTimer;
         kCircleBackgroundTopPosition = -15.0f;
         kCircleHeightBackground = 62.0f;
         kCircleIconHeight = 20.0f;
-        kWindowWidth = 240.0f;
+        kWindowWidth = 245.0f;
         kWindowHeight = 178.0f;
         kTextHeight = 90.0f;
         _shouldDismissOnTapOutside = NO;
@@ -400,7 +400,7 @@ NSTimer *durationTimer;
             kTextHeight = ht;
         } else {
             kWindowHeight += kTextHeight;
-            kTextHeight = 2 * kTextHeight;
+            kTextHeight = 1.7 * kTextHeight;
             _viewText.textAlignment = NSTextAlignmentLeft;
         }
     }

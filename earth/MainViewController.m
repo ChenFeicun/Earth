@@ -11,8 +11,9 @@
 #import "ImgButton.h"
 #import "SCLAlertView.h"
 #import "GoogleMobileAds/GADBannerView.h"
+#import <MessageUI/MFMailComposeViewController.h>
 
-@interface MainViewController () <WBHttpRequestDelegate, CLLocationManagerDelegate> {
+@interface MainViewController () <WBHttpRequestDelegate, CLLocationManagerDelegate, MFMailComposeViewControllerDelegate> {
     CLLocationManager *locationManager;
     CSqlite *m_sqlite;
     GADBannerView *bannerView;
@@ -26,6 +27,9 @@
 @property (strong, nonatomic) MKMapView *m_mapView;
 @property (strong, nonatomic) UILabel *m_locationName;
 
+@property (strong, nonatomic) NSString *province;
+@property (strong, nonatomic) NSString *city;
+
 //@property (strong, nonatomic) AppDelegate *appDelegate;
 //@property (strong, nonatomic) NSString *localPos;
 //@property (strong, nonatomic) CustomAnnotation *tempAnnotation;
@@ -37,22 +41,106 @@
 - (void)callPhone:(UIButton *)sender {
 //uid 1771696403
     //区号的问题
-    NSMutableString * str=[[NSMutableString alloc] initWithFormat:@"tel:%@",@"12369"];
+    NSString *areaCode = @"";
+    if (self.province && self.city) {
+        areaCode = [[ResourceManager sharedInstance] getCityCode:self.city ofProvince:self.province];
+    }
+    areaCode = [areaCode stringByAppendingString:@"12369"];
+    NSString * str = [NSString stringWithFormat:@"tel:%@", areaCode];
     UIWebView *callWebview = [[UIWebView alloc] init];
     [callWebview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:str]]];
     [self.view addSubview:callWebview];
 }
 
+#pragma mark - 更多 评价/邮件
 - (void)showInfo:(id)sender {
     SCLAlertView *alert = [[SCLAlertView alloc] init];
     alert.shouldDismissOnTapOutside = YES;
-    [alert showInfo:self title:@"更多" subTitle:@"1.拨打12369目前版本不支持区号。\n2.发布微博目前仅支持客户端授权方式,需要您的设备上安装微博客户端。\n3.省会城市发布微博会@当地环保局的官方微博,其他城市会@该省环保厅的官方微博。" closeButtonTitle:@"确定" duration:0.0f];
+    [alert addButton:@"评价一下" target:self selector:@selector(scoreApp:)];
+    [alert addButton:@"提点意见" target:self selector:@selector(sendEmail:)];
+    [alert showInfo:self title:@"更多" subTitle:MORE_INFO closeButtonTitle:@"确定" duration:0.0f];
+}
+
+- (void)sendEmail:(id)sender {
+    Class mailClass = (NSClassFromString(@"MFMailComposeViewController"));
+    if (!mailClass) {
+        SCLAlertView *alert = [[SCLAlertView alloc] init];
+        [alert showError:self title:@"发送邮件错误" subTitle:@"当前系统版本不支持应用内发送邮件功能。" closeButtonTitle:@"确定" duration:0.0f];
+        return;
+    }
+    if (![mailClass canSendMail]) {
+        SCLAlertView *alert = [[SCLAlertView alloc] init];
+        [alert showError:self title:@"未设置邮件账户" subTitle:@"您尚未设置邮件账户。" closeButtonTitle:@"确定" duration:0.0f];
+        return;
+    }
+    [self displayMailPicker];
+}
+
+- (void)displayMailPicker {
+    MFMailComposeViewController *mailPicker = [[MFMailComposeViewController alloc] init];
+    mailPicker.mailComposeDelegate = self;
+    
+    //设置主题
+    [mailPicker setSubject: @"穹顶之下"];
+    //添加收件人
+    NSArray *toRecipients = [NSArray arrayWithObject: @"shuxiajian@outlook.com"];
+    [mailPicker setToRecipients: toRecipients];
+    
+    NSString *emailBody = @"<font color='red'></font>";
+    [mailPicker setMessageBody:emailBody isHTML:YES];
+    
+    [self presentViewController:mailPicker animated:YES completion:^{
+        ;
+    }];
+    //    [self presentModalViewController: mailPicker animated:YES];
+}
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    //关闭邮件发送窗口
+    BOOL successed;
+    [controller dismissViewControllerAnimated:YES completion:^{
+        ;
+    }];
+    //[self dismissModalViewControllerAnimated:YES];
+    NSString *msg;
+    switch (result) {
+        case MFMailComposeResultCancelled:
+            msg = @"邮件发送取消";
+            successed = NO;
+            break;
+        case MFMailComposeResultSaved:
+            successed = YES;
+            msg = @"邮件保存成功";
+            break;
+        case MFMailComposeResultSent:
+            successed = YES;
+            msg = @"邮件发送成功";
+            break;
+        case MFMailComposeResultFailed:
+            successed = NO;
+            msg = @"邮件发送失败";
+            break;
+        default:
+            break;
+    }
+    SCLAlertView *alert = [[SCLAlertView alloc] init];
+    alert.shouldDismissOnTapOutside = YES;
+    if (successed) {
+        [alert showSuccess:self title:msg subTitle:@"" closeButtonTitle:@"确定" duration:0.0f];
+    } else {
+        [alert showError:self title:msg subTitle:@"" closeButtonTitle:@"确定" duration:0.0f];
+    }
+}
+#warning url需要替换
+-(void)scoreApp:(id)sender {
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"itms-apps://itunes.apple.com/cn/app/biu-yi-ge-hao-wan-deapp/id946737127?mt=8"]];
 }
 
 #pragma mark - 微博
 
 - (void)loginWeibo:(UIButton *)sender {
-    //[self performSegueWithIdentifier:@"ToWeibo" sender:self];
+//    [self performSegueWithIdentifier:@"ToWeibo" sender:self];
     if (![WeiboSDK isWeiboAppInstalled]) {
         SCLAlertView *alert = [[SCLAlertView alloc] init];
         [alert showWarning:self title:@"未安装微博客户端" subTitle:@"目前版本发布微博需要您的设备安装微博客户端。" closeButtonTitle:@"确定" duration:0.0f];
@@ -161,10 +249,10 @@
     CLLocationCoordinate2D mylocation = newLocation.coordinate;//手机GPS
     mylocation = [self zzTransGPS:mylocation];///火星GPS
     //显示火星坐标
-    //[self setMapPoint:mylocation];
-    //CLLocationCoordinate2D location = {29.656908,91.128851};//
-    //CLLocation *loc = [[CLLocation alloc] initWithLatitude:location.latitude longitude:location.longitude];
-    CLLocation *loc = [[CLLocation alloc] initWithCoordinate:mylocation altitude:newLocation.altitude horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+    [self setMapPoint:mylocation];
+    CLLocationCoordinate2D location = {29.583058, 106.624346};//{32.073029, 112.131153};//重庆{29.583058, 106.624346};//天津{39.126243, 117.140673};//上海{31.219767,121.475826};//北京{39.914271, 116.402544};//西藏{29.656908,91.128851};//天津市  上海市  北京市市辖区
+    CLLocation *loc = [[CLLocation alloc] initWithLatitude:location.latitude longitude:location.longitude];
+    //CLLocation *loc = [[CLLocation alloc] initWithCoordinate:mylocation altitude:newLocation.altitude horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
     
     /////////获取位置信息
     
@@ -174,12 +262,10 @@
             
             CLPlacemark *plmark = [placemarks objectAtIndex:0];
              
-            NSString *country = plmark.country;
-            NSString *province = plmark.administrativeArea;
-            NSString *city = plmark.locality;
-            NSLog(@"%@", [NSString stringWithFormat:@"%@%@%@%@%@%@", plmark.country, plmark.administrativeArea, plmark.locality, plmark.subLocality, plmark.thoroughfare, plmark.subThoroughfare]);
-            //NSLog(@"%@", plmark.addressDictionary);
-            NSLog(@"%@-%@-%@-%@", country, province, city, plmark.name);
+            //NSString *country = plmark.country;
+            self.province = plmark.administrativeArea;
+            self.city = plmark.locality;
+            
             NSString *locStr = @"您的位置: ";
             self.m_locationName.text = [locStr stringByAppendingString:plmark.name];
             
@@ -354,30 +440,30 @@
 
 
 //暂时没用  用于设置地图大头针
-@implementation CustomAnnotation
-
-@synthesize coordinate, title, subtitle;
-
-- (id)initWithCoords:(CLLocationCoordinate2D) coords{
-    
-    self = [super init];
-    
-    if (self != nil) {
-        coordinate = coords;
-    }
-    
-    return self;
-}
-
-- (id)initWithCoords:(CLLocationCoordinate2D)coords andTitle:(NSString *)mapTitle Subtitle:(NSString *)mapSubtitle {
-    self = [super init];
-    
-    if (self != nil) {
-        coordinate = coords;
-        title = mapTitle;
-        subtitle = mapSubtitle;
-    }
-    
-    return self;
-}
-@end
+//@implementation CustomAnnotation
+//
+//@synthesize coordinate, title, subtitle;
+//
+//- (id)initWithCoords:(CLLocationCoordinate2D) coords{
+//    
+//    self = [super init];
+//    
+//    if (self != nil) {
+//        coordinate = coords;
+//    }
+//    
+//    return self;
+//}
+//
+//- (id)initWithCoords:(CLLocationCoordinate2D)coords andTitle:(NSString *)mapTitle Subtitle:(NSString *)mapSubtitle {
+//    self = [super init];
+//    
+//    if (self != nil) {
+//        coordinate = coords;
+//        title = mapTitle;
+//        subtitle = mapSubtitle;
+//    }
+//    
+//    return self;
+//}
+//@end
